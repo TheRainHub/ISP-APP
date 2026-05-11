@@ -1,14 +1,23 @@
 {
-  "name": "${PROJECT_NAME}",
+  "name": "make",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc"
   },
-  "dependencies": {},
   "devDependencies": {
-    "typescript": "^5.5.3"
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
-  "private": true
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }

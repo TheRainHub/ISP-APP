@@ -1,0 +1,1 @@
+export { TechTabletApp } from "./TechTabletApp";
