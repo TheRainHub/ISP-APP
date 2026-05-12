@@ -1,10 +1,12 @@
 import React from "react";
 import { Users, LayoutDashboard, Calendar, Car } from "lucide-react";
 import { AdminView, SystemState } from "../../types";
+import { mockClients } from "../../constants/mockData";
 import { IncomingColumn } from "./IncomingColumn";
 import { PartsReviewColumn } from "./PartsReviewColumn";
 import { ScheduleColumn } from "./ScheduleColumn";
 import { ScheduledColumn } from "./ScheduledColumn";
+import { ActiveColumn } from "./ActiveColumn";
 import { CompletedColumn } from "./CompletedColumn";
 import { ScheduleView } from "./ScheduleView";
 import { ClientsView } from "./ClientsView";
@@ -24,6 +26,9 @@ interface AdminWebAppProps {
   onConfirmSlot: () => void;
   onAdminSend: () => void;
   onAdvisorInitiatePayment: () => void;
+  onUpdateState: (updates: Partial<SystemState>) => void;
+  onAdminSetTaskPrice: (taskId: string, price: number) => void;
+  onAdminSendTaskToClient: (taskId: string) => void;
 }
 
 export function AdminWebApp({
@@ -40,6 +45,9 @@ export function AdminWebApp({
   onConfirmSlot,
   onAdminSend,
   onAdvisorInitiatePayment,
+  onUpdateState,
+  onAdminSetTaskPrice,
+  onAdminSendTaskToClient,
 }: AdminWebAppProps) {
   return (
     <div className={`bg-white border border-gray-200 rounded-3xl flex flex-col relative shadow-xl transition-all duration-700 ${opacity} ${state.orderStatus === 'in_progress' ? 'flex-[1]' : 'flex-[3]'}`}>
@@ -86,6 +94,15 @@ export function AdminWebApp({
               formData={state.formData}
               onTechReview={onTechReview}
               onOpenRejectionModal={onOpenRejectionModal}
+              onClientClick={(name) => {
+                const client = mockClients.find(c => c.name === name);
+                if (client) {
+                  onUpdateState({ 
+                    adminView: 'clients',
+                    selectedClientId: client.id 
+                  });
+                }
+              }}
             />
 
             <PartsReviewColumn
@@ -117,6 +134,14 @@ export function AdminWebApp({
               onAdminSend={onAdminSend}
             />
 
+            <ActiveColumn
+              orderStatus={state.orderStatus}
+              formData={state.formData}
+              additionalTasks={state.additionalTasks}
+              onAdminSetPrice={onAdminSetTaskPrice}
+              onAdminSendToClient={onAdminSendTaskToClient}
+            />
+
             <CompletedColumn
               orderStatus={state.orderStatus}
               formData={state.formData}
@@ -128,7 +153,13 @@ export function AdminWebApp({
         )}
 
         {state.adminView === 'schedule' && <ScheduleView />}
-        {state.adminView === 'clients' && <ClientsView />}
+        {state.adminView === 'clients' && (
+          <ClientsView 
+            initialSelectedClientId={state.selectedClientId}
+            onClientSelect={(id) => onUpdateState({ selectedClientId: id })}
+            onBackToDashboard={() => onUpdateState({ adminView: 'requests', selectedClientId: null })}
+          />
+        )}
       </div>
 
       <RejectionModal

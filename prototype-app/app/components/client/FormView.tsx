@@ -9,11 +9,12 @@ interface FormViewProps {
     issue: string;
     photos: string[];
     selectedServices: string[];
+    prefersOriginalParts: boolean;
   };
   formRejected: boolean;
   rejectionComment: string;
   isClient: boolean;
-  onFormChange: (field: string, value: string | string[]) => void;
+  onFormChange: (field: string, value: string | string[] | boolean) => void;
   onPhotoUpload: () => void;
   onPhotoRemove: (idx: number) => void;
   onSubmitRequest: () => void;
@@ -116,6 +117,20 @@ export function FormView({
             </label>
           ))}
         </div>
+      </div>
+
+      <div>
+        <label className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-white transition-colors">
+          <input
+            type="checkbox"
+            checked={formData.prefersOriginalParts}
+            onChange={(e) => onFormChange('prefersOriginalParts', e.target.checked)}
+            className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+          />
+          <span className="text-sm font-semibold text-gray-900">
+            I prefer branded / original parts
+          </span>
+        </label>
       </div>
 
       <div>

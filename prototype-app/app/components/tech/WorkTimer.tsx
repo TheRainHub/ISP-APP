@@ -50,7 +50,7 @@ export function WorkTimer({ startTime, orderStatus }: WorkTimerProps) {
           </div>
           <div className="flex items-center gap-1 font-mono">
             <motion.span
-              key={hours}
+              key={`h-${hours}`}
               initial={{ scale: 1.2 }}
               animate={{ scale: 1 }}
               className="text-2xl font-bold text-amber-900"
@@ -59,7 +59,7 @@ export function WorkTimer({ startTime, orderStatus }: WorkTimerProps) {
             </motion.span>
             <span className="text-xl text-amber-700">:</span>
             <motion.span
-              key={minutes}
+              key={`m-${minutes}`}
               initial={{ scale: 1.2 }}
               animate={{ scale: 1 }}
               className="text-2xl font-bold text-amber-900"
@@ -68,7 +68,7 @@ export function WorkTimer({ startTime, orderStatus }: WorkTimerProps) {
             </motion.span>
             <span className="text-xl text-amber-700">:</span>
             <motion.span
-              key={seconds}
+              key={`s-${seconds}`}
               initial={{ scale: 1.2 }}
               animate={{ scale: 1 }}
               className="text-2xl font-bold text-amber-900"

@@ -1,11 +1,34 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Car, ArrowLeft, History, Settings, DollarSign } from "lucide-react";
+import { Users, Car, ArrowLeft, History, Settings, Receipt, LayoutDashboard } from "lucide-react";
 import { mockClients, mockServiceHistory } from "../../constants/mockData";
 import { Client } from "../../types";
+import { useEffect } from "react";
 
-export function ClientsView() {
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+interface ClientsViewProps {
+  initialSelectedClientId?: string | null;
+  onClientSelect?: (clientId: string | null) => void;
+  onBackToDashboard?: () => void;
+}
+
+export function ClientsView({ initialSelectedClientId, onClientSelect, onBackToDashboard }: ClientsViewProps) {
+  const [selectedClient, setSelectedClient] = useState<Client | null>(
+    initialSelectedClientId ? mockClients.find(c => c.id === initialSelectedClientId) || null : null
+  );
+
+  useEffect(() => {
+    if (initialSelectedClientId) {
+      const client = mockClients.find(c => c.id === initialSelectedClientId);
+      if (client) setSelectedClient(client);
+    } else {
+      setSelectedClient(null);
+    }
+  }, [initialSelectedClientId]);
+
+  const handleSelectClient = (client: Client | null) => {
+    setSelectedClient(client);
+    if (onClientSelect) onClientSelect(client?.id || null);
+  };
 
   const clientHistory = selectedClient
     ? mockServiceHistory.filter(h => h.vin === selectedClient.vin)
@@ -30,7 +53,7 @@ export function ClientsView() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   whileHover={{ scale: 1.01 }}
-                  onClick={() => setSelectedClient(client)}
+                  onClick={() => handleSelectClient(client)}
                   className="bg-white border border-gray-200 rounded-xl p-4 hover:border-red-300 hover:shadow-md transition-all cursor-pointer"
                 >
                   <div className="flex items-start justify-between mb-3">
@@ -73,30 +96,40 @@ export function ClientsView() {
           >
             <div className="p-6 pb-4 border-b border-gray-100">
               <button
-                onClick={() => setSelectedClient(null)}
+                onClick={() => handleSelectClient(null)}
                 className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-4 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Clients
               </button>
+              
+              {onBackToDashboard && (
+                <button
+                  onClick={onBackToDashboard}
+                  className="flex items-center gap-2 text-xs font-bold text-red-600 hover:text-red-700 mb-4 transition-colors bg-red-50 px-3 py-1.5 rounded-full w-fit"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  Return to Active Requests
+                </button>
+              )}
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedClient.name}</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedClient?.name}</h2>
                   <div className="text-sm text-gray-600 space-y-1">
-                    <div>{selectedClient.phone}</div>
-                    <div>{selectedClient.email}</div>
+                    <div>{selectedClient?.phone}</div>
+                    <div>{selectedClient?.email}</div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-gray-500 mb-1">Total Orders</div>
-                  <div className="text-3xl font-bold text-red-600">{selectedClient.totalOrders}</div>
+                  <div className="text-3xl font-bold text-red-600">{selectedClient?.totalOrders}</div>
                 </div>
               </div>
               <div className="mt-4 p-3 bg-gray-50 rounded-lg flex items-center gap-3">
                 <Car className="w-5 h-5 text-gray-500" />
                 <div>
-                  <div className="font-bold text-gray-900">{selectedClient.vehicle}</div>
-                  <div className="text-xs text-gray-600">VIN: {selectedClient.vin}</div>
+                  <div className="font-bold text-gray-900">{selectedClient?.vehicle}</div>
+                  <div className="text-xs text-gray-600">VIN: {selectedClient?.vin}</div>
                 </div>
               </div>
             </div>
@@ -117,7 +150,7 @@ export function ClientsView() {
                     </div>
                     <div>
                       <div className="text-xs text-gray-600 mb-1">Last Visit</div>
-                      <div className="font-bold text-gray-900">{selectedClient.lastVisit}</div>
+                      <div className="font-bold text-gray-900">{selectedClient?.lastVisit}</div>
                     </div>
                   </div>
                 </div>
@@ -144,7 +177,7 @@ export function ClientsView() {
                           </div>
                           <div className="text-right">
                             <div className="flex items-center gap-1 text-emerald-700 font-bold">
-                              <DollarSign className="w-4 h-4" />
+                              <Receipt className="w-4 h-4" />
                               {record.cost.toLocaleString()} Kč
                             </div>
                           </div>

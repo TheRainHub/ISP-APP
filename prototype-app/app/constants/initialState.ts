@@ -15,6 +15,8 @@ export const initialState: SystemState = {
     issue: "",
     photos: [],
     selectedServices: [],
+    prefersOriginalParts: false,
+    clientName: "Sergey Nazarov",
   },
   requiredParts: [],
   availableSlots: [],
@@ -45,4 +47,5 @@ export const initialState: SystemState = {
   currentMechanicView: null,
   workStartTime: null,
   workElapsedSeconds: 0,
+  selectedClientId: null,
 };
