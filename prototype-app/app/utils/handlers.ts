@@ -9,7 +9,7 @@ export function createHandlers(
   const setState = updateState;
 
   return {
-    handleFormChange: (field: string, value: string | string[]) => {
+    handleFormChange: (field: string, value: string | string[] | boolean) => {
       setState({
         formData: { ...state.formData, [field]: value }
       });
@@ -185,23 +185,24 @@ export function createHandlers(
     },
 
     handleSubmitAdditionalTask: () => {
-      if (state.additionalTaskDraft.trim() && state.additionalTaskCostDraft.trim()) {
+      if (state.additionalTaskDraft.trim()) {
         const newTask: AdditionalTask = {
           id: `task-${Date.now()}`,
           description: state.additionalTaskDraft,
-          estimatedCost: parseFloat(state.additionalTaskCostDraft),
+          estimatedCost: 0,
           approved: false,
           declined: false,
+          sentToAdmin: true,
+          sentToClient: false,
         };
         setState({
           additionalTasks: [...state.additionalTasks, newTask],
           showAdditionalTaskModal: false,
           additionalTaskDraft: "",
           additionalTaskCostDraft: "",
-          clientHasNotif: true,
-          focusedRole: "client",
+          focusedRole: "admin",
         });
-        showToast("Additional task sent to client for approval");
+        showToast("Task sent to Service Advisor for pricing");
       }
     },
 
@@ -223,6 +224,25 @@ export function createHandlers(
         focusedRole: "tech",
       });
       showToast("Additional task declined by client");
+    },
+    
+    handleAdminSetTaskPrice: (taskId: string, price: number) => {
+      setState({
+        additionalTasks: state.additionalTasks.map(t =>
+          t.id === taskId ? { ...t, estimatedCost: price } : t
+        )
+      });
+    },
+
+    handleAdminSendTaskToClient: (taskId: string) => {
+      setState({
+        additionalTasks: state.additionalTasks.map(t =>
+          t.id === taskId ? { ...t, sentToClient: true, sentToAdmin: false } : t
+        ),
+        clientHasNotif: true,
+        focusedRole: "client",
+      });
+      showToast("Price set and task sent to client for approval");
     },
 
     handleTechCheck: () => {
@@ -281,11 +301,11 @@ export function createHandlers(
     },
 
     handleMechanicLogin: (mechanicId: string) => {
-      const alreadyLoggedIn = state.loggedInMechanics.some(m => m.mechanicId === mechanicId);
+      const alreadyLoggedIn = (state.loggedInMechanics || []).some(m => m.mechanicId === mechanicId);
       if (!alreadyLoggedIn) {
         setState({
           loggedInMechanics: [
-            ...state.loggedInMechanics,
+            ...(state.loggedInMechanics || []),
             { mechanicId, loginTime: new Date().toISOString() }
           ],
           currentMechanicView: mechanicId,

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, CheckCircle, AlertCircle, CreditCard, Car, Sparkles } from "lucide-react";
 import { AdditionalTask, TimeSlot, OrderStatus } from "../../types";
 import { SlotPicker } from "./SlotPicker";
+import { ReceiptView } from "./ReceiptView";
+import { FeedbackPoll } from "./FeedbackPoll";
 
 interface TrackingViewProps {
   formData: {
@@ -60,8 +62,17 @@ export function TrackingView({
       <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 relative z-0">
         <div className="flex justify-between items-center mb-6">
           <span className="text-xs text-gray-500 font-medium">Order Status</span>
-          <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase ${orderStatus === 'new' ? 'bg-amber-100 text-amber-700' : orderStatus === 'accepted' ? 'bg-blue-100 text-blue-700' : orderStatus === 'in_progress' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
-            {orderStatus === 'new' ? 'Pending' : orderStatus === 'accepted' ? 'Accepted' : orderStatus === 'in_progress' ? 'In Progress' : 'Done'}
+          <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase ${
+            orderStatus === 'new' ? 'bg-amber-100 text-amber-700' : 
+            orderStatus === 'accepted' ? 'bg-blue-100 text-blue-700' : 
+            orderStatus === 'in_progress' ? 'bg-amber-100 text-amber-700' : 
+            paymentSuccess ? 'bg-emerald-500 text-white shadow-sm' : 
+            'bg-emerald-100 text-emerald-700'
+          }`}>
+            {orderStatus === 'new' ? 'Pending' : 
+             orderStatus === 'accepted' ? 'Accepted' : 
+             orderStatus === 'in_progress' ? 'In Progress' : 
+             paymentSuccess ? 'Paid / Ready' : 'Done'}
           </span>
         </div>
 
@@ -89,10 +100,21 @@ export function TrackingView({
             <div className="text-sm font-semibold text-gray-900">In Progress</div>
             <div className="text-xs text-gray-500 mt-1">Vehicle in repair bay</div>
           </div>
+
           <div className={`relative transition-opacity duration-500 ${step >= 3 ? 'opacity-100' : 'opacity-40'}`}>
-            <div className={`absolute -left-[17px] top-0 w-3 h-3 rounded-full ${step === 3 ? 'bg-emerald-600 ring-4 ring-emerald-100' : 'bg-gray-300'}`} />
+            <div className={`absolute -left-[17px] top-0 w-3 h-3 rounded-full ${paymentSuccess ? 'bg-emerald-600' : (orderStatus === 'done' && !paymentSuccess) ? 'bg-amber-500 ring-4 ring-amber-100' : 'bg-gray-300'}`} />
+            <div className="text-sm font-semibold text-gray-900">Payment</div>
+            <div className="text-xs text-gray-500 mt-1">
+              {paymentSuccess ? 'Payment confirmed via Apple Pay' : 'Waiting for payment confirmation'}
+            </div>
+          </div>
+
+          <div className={`relative transition-opacity duration-500 ${step >= 3 ? 'opacity-100' : 'opacity-40'}`}>
+            <div className={`absolute -left-[17px] top-0 w-3 h-3 rounded-full ${vehiclePickedUp ? 'bg-emerald-600' : (paymentSuccess && !vehiclePickedUp) ? 'bg-amber-500 ring-4 ring-amber-100' : 'bg-gray-300'}`} />
             <div className="text-sm font-semibold text-gray-900">Ready for Pickup</div>
-            <div className="text-xs text-gray-500 mt-1">Waiting for you at the service</div>
+            <div className="text-xs text-gray-500 mt-1">
+              {vehiclePickedUp ? 'Vehicle has been picked up' : 'Your car is waiting at the service bay'}
+            </div>
           </div>
         </div>
       </div>
@@ -101,6 +123,7 @@ export function TrackingView({
         <AnimatePresence>
           {availableSlots.length > 0 && !appointmentConfirmed && (
             <SlotPicker
+              key="slot-picker"
               availableSlots={availableSlots}
               selectedSlot={selectedSlot}
               partsOrdered={partsOrdered}
@@ -111,6 +134,7 @@ export function TrackingView({
 
           {appointmentConfirmed && selectedSlot && (
             <motion.div
+              key="appointment-confirmed"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 50, opacity: 0 }}
@@ -135,7 +159,7 @@ export function TrackingView({
             </motion.div>
           )}
 
-          {additionalTasks.filter(t => !t.approved && !t.declined).map(task => (
+          {additionalTasks.filter(t => t.sentToClient && !t.approved && !t.declined).map(task => (
             <motion.div
               key={task.id}
               initial={{ y: 50, opacity: 0 }}
@@ -175,6 +199,7 @@ export function TrackingView({
 
           {orderStatus === 'done' && paymentInitiatedByAdvisor && !paymentSuccess && (
             <motion.div
+              key="payment-pending"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 50, opacity: 0 }}
@@ -187,19 +212,48 @@ export function TrackingView({
                   <div className="text-xs text-gray-600 mt-1">Brake pads replaced</div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl p-3 mb-3">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-gray-600">Parts & Labor</span>
-                  <span className="text-sm font-bold text-gray-900">3,800 Kč</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-600">Service Fee</span>
-                  <span className="text-sm font-bold text-gray-900">400 Kč</span>
-                </div>
-                <div className="border-t border-gray-200 mt-2 pt-2 flex justify-between items-center">
-                  <span className="text-sm font-bold text-gray-900">Total</span>
-                  <span className="text-lg font-bold text-red-600">4,200 Kč</span>
-                </div>
+              <div className="bg-white rounded-xl p-4 mb-3 shadow-inner">
+                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-3 border-b border-gray-50 pb-2">Service Breakdown</div>
+                {(() => {
+                  const approvedTasks = additionalTasks.filter(t => t.approved);
+                  const items = [
+                    { name: "Engine Diagnostics & Inspection", price: 1200 },
+                    { name: "Front Brake Pads (OEM)", price: 2800 },
+                    ...approvedTasks.map(t => ({ name: t.description, price: t.estimatedCost || 0 }))
+                  ];
+                  
+                  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+                  const discount = Math.round(subtotal * 0.1);
+                  const total = subtotal - discount;
+
+                  return (
+                    <>
+                      <div className="space-y-2 mb-4">
+                        {items.map((item, i) => (
+                          <div key={i} className="flex justify-between items-center text-xs">
+                            <span className="text-gray-600">{item.name}</span>
+                            <span className="font-semibold text-gray-900">{item.price.toLocaleString()} Kč</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-3 border-t border-dashed border-gray-200 space-y-2">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-gray-500">Subtotal</span>
+                          <span className="font-bold text-gray-900">{subtotal.toLocaleString()} Kč</span>
+                        </div>
+                        <div className="flex justify-between items-center text-emerald-600 font-bold">
+                          <span className="text-xs">10% Loyalty Discount</span>
+                          <span className="text-sm">-{discount.toLocaleString()} Kč</span>
+                        </div>
+                        <div className="border-t-2 border-gray-900 mt-2 pt-2 flex justify-between items-center">
+                          <span className="text-sm font-black text-gray-900 uppercase">Total to Pay</span>
+                          <span className="text-xl font-black text-red-600">{total.toLocaleString()} Kč</span>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
               <button
                 onClick={onPayment}
@@ -213,6 +267,7 @@ export function TrackingView({
 
           {orderStatus === 'done' && showPayment && (
             <motion.div
+              key="payment-processing"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -289,7 +344,18 @@ export function TrackingView({
                     transition={{ delay: 0.5 }}
                     className="text-sm text-gray-600"
                   >
-                    4,200 Kč paid
+                    {(() => {
+                      const approvedTasks = additionalTasks.filter(t => t.approved);
+                      const items = [
+                        { name: "Engine Diagnostics & Inspection", price: 1200 },
+                        { name: "Front Brake Pads (OEM)", price: 2800 },
+                        ...approvedTasks.map(t => ({ name: t.description, price: t.estimatedCost || 0 }))
+                      ];
+                      const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+                      const discount = Math.round(subtotal * 0.1);
+                      const total = subtotal - discount;
+                      return `${total.toLocaleString()} Kč paid`;
+                    })()}
                   </motion.p>
                 </motion.div>
               )}
@@ -298,6 +364,7 @@ export function TrackingView({
 
           {orderStatus === 'done' && paymentSuccess && !showPayment && !vehiclePickedUp && (
             <motion.div
+              key="thank-you-pickup"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               className="bg-gradient-to-br from-emerald-50 to-blue-50 border border-emerald-200 rounded-2xl p-6 shadow-sm text-center mb-4"
@@ -324,24 +391,33 @@ export function TrackingView({
           )}
 
           {vehiclePickedUp && (
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", damping: 15 }}
-              className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg text-center"
-            >
+            <div key="order-completed-summary" className="space-y-6">
               <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", damping: 12, delay: 0.2 }}
-                className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", damping: 15 }}
+                className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg text-center"
               >
-                <CheckCircle className="w-12 h-12 text-white" />
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", damping: 12, delay: 0.2 }}
+                  className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center"
+                >
+                  <CheckCircle className="w-12 h-12 text-white" />
+                </motion.div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Order Completed!</h3>
+                <p className="text-sm text-gray-700 mb-1">Your {formData.vehicle} is ready</p>
+                <p className="text-xs text-gray-600">Safe travels! 🚗</p>
               </motion.div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Order Completed!</h3>
-              <p className="text-sm text-gray-700 mb-1">Your {formData.vehicle} is ready</p>
-              <p className="text-xs text-gray-600">Safe travels! 🚗</p>
-            </motion.div>
+
+              <ReceiptView 
+                formData={formData}
+                additionalTasks={additionalTasks}
+              />
+
+              <FeedbackPoll />
+            </div>
           )}
         </AnimatePresence>
       </div>

@@ -66,7 +66,7 @@ export default function PrototypePage() {
           <AdminWebApp
             state={state}
             opacity={getOpacity(state.focusedRole, "admin", state.appointmentNotif, state.appointmentConfirmed)}
-            onViewChange={(view) => setState({ adminView: view })}
+            onViewChange={(view) => updateState({ adminView: view })}
             onTechReview={handlers.handleTechReview}
             onOpenRejectionModal={() => updateState({ showRejectionModal: true })}
             onCloseRejectionModal={() => updateState({ showRejectionModal: false, rejectionDraft: "" })}
@@ -81,6 +81,9 @@ export default function PrototypePage() {
             onConfirmSlot={handlers.handleConfirmSlot}
             onAdminSend={handlers.handleAdminSend}
             onAdvisorInitiatePayment={handlers.handleAdvisorInitiatePayment}
+            onUpdateState={updateState}
+            onAdminSetTaskPrice={handlers.handleAdminSetTaskPrice}
+            onAdminSendTaskToClient={handlers.handleAdminSendTaskToClient}
           />
 
           <TechTabletApp

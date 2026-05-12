@@ -9,7 +9,6 @@ interface AdditionalTaskModalProps {
   onClose: () => void;
   onSubmit: () => void;
   onTaskDraftChange: (value: string) => void;
-  onCostDraftChange: (value: string) => void;
 }
 
 export function AdditionalTaskModal({
@@ -19,7 +18,6 @@ export function AdditionalTaskModal({
   onClose,
   onSubmit,
   onTaskDraftChange,
-  onCostDraftChange,
 }: AdditionalTaskModalProps) {
   return (
     <AnimatePresence>
@@ -65,18 +63,6 @@ export function AdditionalTaskModal({
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                  Estimated Cost (Kč)
-                </label>
-                <input
-                  type="number"
-                  value={additionalTaskCostDraft}
-                  onChange={(e) => onCostDraftChange(e.target.value)}
-                  placeholder="e.g., 2500"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
-                />
-              </div>
             </div>
 
             <div className="flex gap-3">
@@ -88,10 +74,10 @@ export function AdditionalTaskModal({
               </button>
               <button
                 onClick={onSubmit}
-                disabled={!additionalTaskDraft?.trim() || !additionalTaskCostDraft?.trim()}
+                disabled={!additionalTaskDraft?.trim()}
                 className="flex-1 px-4 py-3 bg-amber-600 text-white rounded-xl font-semibold hover:bg-amber-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
-                Send to Client
+                Send to Admin
               </button>
             </div>
           </motion.div>

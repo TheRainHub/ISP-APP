@@ -172,21 +172,21 @@ export const mockBays: Bay[] = [
 ];
 
 export const mockMechanics: Mechanic[] = [
-  { id: "mech1", name: "Jan Novák", specialty: "Brakes & Suspension", available: true, rating: 4.9 },
+  { id: "mech1", name: "Nazar Sergeyev", specialty: "Brakes & Suspension", available: true, rating: 4.9 },
   { id: "mech2", name: "Petra Svobodová", specialty: "Engine & Transmission", available: true, rating: 4.8 },
   { id: "mech3", name: "Tomáš Dvořák", specialty: "Electrical & Diagnostics", available: false, currentJob: "Working on Bay 3", rating: 4.7 },
   { id: "mech4", name: "Lucie Procházková", specialty: "General Maintenance", available: true, rating: 4.6 },
 ];
 
 export const mockOrders: Order[] = [
-  { id: "1", vehicle: "BMW X5", vin: "5UXKR0C58L9C12345", issue: "Grinding noise when braking", status: "new", clientName: "Petr Černý", phone: "+420 777 123 456", scheduledTime: "10:00 AM" },
+  { id: "1", vehicle: "BMW X5", vin: "5UXKR0C58L9C12345", issue: "Grinding noise when braking", status: "new", clientName: "Sergey Nazarov", phone: "+420 777 123 456", scheduledTime: "10:00 AM" },
   { id: "2", vehicle: "Mercedes C-Class", vin: "WDDGF8AB9EA123456", issue: "Engine check light", status: "accepted", clientName: "Jana Horáková", phone: "+420 777 234 567", scheduledTime: "11:30 AM" },
   { id: "3", vehicle: "Audi A4", vin: "WAUZZZ8K8DA234567", issue: "Oil change service", status: "in_progress", clientName: "Martin Kučera", phone: "+420 777 345 678", scheduledTime: "09:00 AM" },
   { id: "4", vehicle: "Tesla Model 3", vin: "5YJ3E1EA8KF345678", issue: "Tire rotation", status: "done", clientName: "Eva Marková", phone: "+420 777 456 789", scheduledTime: "08:00 AM" },
 ];
 
 export const mockClients: Client[] = [
-  { id: "1", name: "Petr Černý", phone: "+420 777 123 456", email: "petr.cerny@email.cz", vehicle: "BMW X5", vin: "5UXKR0C58L9C12345", lastVisit: "2026-05-09", totalOrders: 12 },
+  { id: "1", name: "Sergey Nazarov", phone: "+420 777 123 456", email: "sergey.nazarov@email.cz", vehicle: "BMW X5", vin: "5UXKR0C58L9C12345", lastVisit: "2026-05-09", totalOrders: 12 },
   { id: "2", name: "Jana Horáková", phone: "+420 777 234 567", email: "jana.horakova@email.cz", vehicle: "Mercedes C-Class", vin: "WDDGF8AB9EA123456", lastVisit: "2026-05-08", totalOrders: 8 },
   { id: "3", name: "Martin Kučera", phone: "+420 777 345 678", email: "martin.kucera@email.cz", vehicle: "Audi A4", vin: "WAUZZZ8K8DA234567", lastVisit: "2026-05-09", totalOrders: 15 },
   { id: "4", name: "Eva Marková", phone: "+420 777 456 789", email: "eva.markova@email.cz", vehicle: "Tesla Model 3", vin: "5YJ3E1EA8KF345678", lastVisit: "2026-05-09", totalOrders: 5 },
