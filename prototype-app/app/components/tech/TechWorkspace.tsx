@@ -38,7 +38,7 @@ export function TechWorkspace({
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col h-full">
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="text-2xl font-bold mb-1 text-gray-900">{formData.vehicle} (А123ВС)</h2>
+          <h2 className="text-2xl font-bold mb-1 text-gray-900">{formData.vehicle} (ABC-123)</h2>
           <span className="text-amber-600 text-sm flex items-center gap-1">
             <Info className="w-4 h-4"/>
             {formData.issue}
@@ -97,7 +97,7 @@ export function TechWorkspace({
             .filter(t => t.approved)
             .map((t, idx) => ({
               id: 100 + idx,
-              label: `${t.description} (+${t.estimatedCost} Kč)`,
+              label: t.description,
               isAdditional: true
             }))
         ].map((item, idx) => {

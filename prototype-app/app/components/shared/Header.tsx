@@ -4,9 +4,17 @@ import { Settings, ChevronRight } from "lucide-react";
 interface HeaderProps {
   step: number;
   onReset: () => void;
+  onPrevStep: () => void;
+  onNextStep: () => void;
+  canGoNext: boolean;
 }
 
-export function Header({ step, onReset }: HeaderProps) {
+export function Header({ step, onReset, onPrevStep, onNextStep, canGoNext }: HeaderProps) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const steps = [
     { n: 0, label: "Request" },
     { n: 1, label: "Acceptance" },
@@ -35,9 +43,29 @@ export function Header({ step, onReset }: HeaderProps) {
         ))}
       </div>
 
-      <button onClick={onReset} className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors font-medium">
-        ↺ Reset
-      </button>
+      <div className="flex items-center gap-2">
+        <div className="flex bg-gray-100 rounded-lg p-1 mr-2">
+          <button 
+            onClick={onPrevStep}
+            disabled={mounted && step === 0}
+            className="p-1.5 hover:bg-white rounded-md disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+            title="Previous Stage"
+          >
+            <ChevronRight className="w-5 h-5 rotate-180" />
+          </button>
+          <button 
+            onClick={onNextStep}
+            disabled={mounted && !canGoNext}
+            className="p-1.5 hover:bg-white rounded-md disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+            title="Next Stage"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+        <button onClick={onReset} className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors font-medium">
+          ↺ Reset
+        </button>
+      </div>
     </header>
   );
 }

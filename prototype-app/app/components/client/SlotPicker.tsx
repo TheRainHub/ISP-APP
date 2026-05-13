@@ -57,7 +57,7 @@ export function SlotPicker({
           <div key={date} className="bg-white rounded-lg p-3 border border-blue-200">
             <div className="text-xs font-bold text-gray-700 mb-2 flex items-center gap-1">
               <Calendar className="w-3 h-3" />
-              {date}
+              {date.split('-').reverse().join('.')}
             </div>
             <div className="grid grid-cols-2 gap-2">
               {slotsByDate[date].map((slot) => (

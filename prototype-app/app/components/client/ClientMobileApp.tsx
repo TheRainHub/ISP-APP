@@ -29,6 +29,7 @@ interface ClientMobileAppProps {
   showPayment: boolean;
   vehiclePickedUp: boolean;
   partsOrdered: boolean;
+  requestDeclined: boolean;
   opacity: string;
   isClient: boolean;
   onFormChange: (field: string, value: string | string[]) => void;
@@ -64,6 +65,7 @@ export function ClientMobileApp({
   showPayment,
   vehiclePickedUp,
   partsOrdered,
+  requestDeclined,
   opacity,
   isClient,
   onFormChange,
@@ -137,6 +139,7 @@ export function ClientMobileApp({
               showPayment={showPayment}
               vehiclePickedUp={vehiclePickedUp}
               partsOrdered={partsOrdered}
+              requestDeclined={requestDeclined}
               onConfirmAppointment={onConfirmAppointment}
               onDeclineAppointment={onDeclineAppointment}
               onApproveAdditionalTask={onApproveAdditionalTask}

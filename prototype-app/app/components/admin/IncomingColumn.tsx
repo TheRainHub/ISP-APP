@@ -17,7 +17,9 @@ interface IncomingColumnProps {
   };
   onTechReview: () => void;
   onOpenRejectionModal: () => void;
+  onDeclineRequest: () => void;
   onClientClick: (clientName: string) => void;
+  resourcesAllocated: boolean;
 }
 
 export function IncomingColumn({
@@ -26,7 +28,9 @@ export function IncomingColumn({
   formData,
   onTechReview,
   onOpenRejectionModal,
+  onDeclineRequest,
   onClientClick,
+  resourcesAllocated,
 }: IncomingColumnProps) {
   return (
     <div className="flex-1 min-w-[280px]">
@@ -34,7 +38,7 @@ export function IncomingColumn({
         Incoming <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-bold">1</span>
       </h4>
 
-      {clientView === 'tracking' && orderStatus === 'new' && (
+      {clientView === 'tracking' && orderStatus === 'new' && !resourcesAllocated && (
         <motion.div layout className="bg-white border-l-4 border-l-amber-500 rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md">
           <div className="flex justify-between items-start mb-1">
             <div className="font-bold text-gray-900">{formData.vehicle} · {formData.vin}</div>
@@ -112,18 +116,26 @@ export function IncomingColumn({
             return null;
           })()}
 
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <button
+                onClick={onTechReview}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md"
+              >
+                ✓ Accept
+              </button>
+              <button
+                onClick={onOpenRejectionModal}
+                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md"
+              >
+                ← Request Changes
+              </button>
+            </div>
             <button
-              onClick={onTechReview}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md"
+              onClick={onDeclineRequest}
+              className="w-full border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1"
             >
-              ✓ Accept
-            </button>
-            <button
-              onClick={onOpenRejectionModal}
-              className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md"
-            >
-              ← Request Changes
+              ✕ Decline Request (Spam/Invalid)
             </button>
           </div>
         </motion.div>

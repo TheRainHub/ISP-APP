@@ -8,6 +8,8 @@ export interface Part {
   available: boolean;
   quantity: number;
   price: number;
+  supplier?: string;
+  deliveryDays?: number;
   estimatedDelivery?: string;
 }
 
@@ -60,6 +62,7 @@ export interface AdditionalTask {
   completed?: boolean;
   sentToAdmin?: boolean;
   sentToClient?: boolean;
+  photos?: string[];
 }
 
 export interface Order {
@@ -159,4 +162,8 @@ export interface SystemState {
   workStartTime: number | null;
   workElapsedSeconds: number;
   selectedClientId: string | null;
+  slotsSuggested: boolean;
+  maxStepReached: number;
+  requestDeclined: boolean;
+  additionalTaskPhotosDraft: string[];
 }

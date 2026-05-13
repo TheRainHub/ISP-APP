@@ -1,56 +1,40 @@
 import { Part, TimeSlot, StandardService, ServiceHistory, Bay, Mechanic, Order, Client, ScheduleItem } from "../types";
 
 export const mockParts: Part[] = [
-  { id: "1", name: "Front Brake Pads", available: true, quantity: 4, price: 2800, estimatedDelivery: undefined },
-  { id: "2", name: "Brake Fluid", available: true, quantity: 10, price: 400, estimatedDelivery: undefined },
-  { id: "3", name: "Brake Discs", available: false, quantity: 0, price: 5600, estimatedDelivery: "2026-05-11" },
+  { id: "1", name: "Front Brake Pads", available: true, quantity: 4, price: 2800, supplier: "AutoKelly", deliveryDays: 0 },
+  { id: "2", name: "Brake Fluid", available: true, quantity: 10, price: 400, supplier: "Elit", deliveryDays: 0 },
+  { id: "3", name: "Brake Discs (Sport)", available: false, quantity: 0, price: 5600, supplier: "Brembo Direct", deliveryDays: 2, estimatedDelivery: "2 days" },
+  { id: "4", name: "Brake Sensor Wire", available: false, quantity: 0, price: 850, supplier: "Bosch Parts", deliveryDays: 1, estimatedDelivery: "1 day" },
 ];
 
 export const mockTimeSlots: TimeSlot[] = [
-  // May 10
-  { id: "1", time: "09:00 AM", date: "2026-05-10", available: true },
-  { id: "2", time: "11:00 AM", date: "2026-05-10", available: true },
-  { id: "3", time: "02:00 PM", date: "2026-05-10", available: false },
-  { id: "4", time: "04:00 PM", date: "2026-05-10", available: true },
-  // May 11
-  { id: "5", time: "09:00 AM", date: "2026-05-11", available: true },
-  { id: "6", time: "10:00 AM", date: "2026-05-11", available: true },
-  { id: "7", time: "01:00 PM", date: "2026-05-11", available: false },
-  { id: "8", time: "03:00 PM", date: "2026-05-11", available: true },
-  // May 12
-  { id: "9", time: "08:00 AM", date: "2026-05-12", available: true },
-  { id: "10", time: "11:00 AM", date: "2026-05-12", available: true },
-  { id: "11", time: "02:00 PM", date: "2026-05-12", available: true },
-  // May 13
-  { id: "12", time: "09:00 AM", date: "2026-05-13", available: true },
-  { id: "13", time: "03:00 PM", date: "2026-05-13", available: true },
-  // May 14
-  { id: "14", time: "10:00 AM", date: "2026-05-14", available: true },
-  { id: "15", time: "01:00 PM", date: "2026-05-14", available: false },
-  { id: "16", time: "04:00 PM", date: "2026-05-14", available: true },
+  // May 14 (Presentation Day)
+  { id: "1", time: "09:00 AM", date: "2026-05-14", available: true },
+  { id: "2", time: "11:00 AM", date: "2026-05-14", available: true },
+  { id: "3", time: "02:00 PM", date: "2026-05-14", available: false },
+  { id: "4", time: "04:00 PM", date: "2026-05-14", available: true },
   // May 15
-  { id: "17", time: "09:00 AM", date: "2026-05-15", available: true },
-  { id: "18", time: "11:00 AM", date: "2026-05-15", available: true },
-  // May 16-17 (weekend - fewer slots)
-  { id: "19", time: "10:00 AM", date: "2026-05-16", available: true },
-  { id: "20", time: "10:00 AM", date: "2026-05-17", available: true },
+  { id: "5", time: "09:00 AM", date: "2026-05-15", available: true },
+  { id: "6", time: "10:00 AM", date: "2026-05-15", available: true },
+  { id: "7", time: "01:00 PM", date: "2026-05-15", available: false },
+  { id: "8", time: "03:00 PM", date: "2026-05-15", available: true },
+  // May 16
+  { id: "9", time: "08:00 AM", date: "2026-05-16", available: true },
+  { id: "10", time: "11:00 AM", date: "2026-05-16", available: true },
+  { id: "11", time: "02:00 PM", date: "2026-05-16", available: true },
+  // May 17 (Available after parts delivery)
+  { id: "12", time: "09:00 AM", date: "2026-05-17", available: true },
+  { id: "13", time: "01:00 PM", date: "2026-05-17", available: true },
+  { id: "14", time: "03:00 PM", date: "2026-05-17", available: true },
   // May 18
-  { id: "21", time: "08:00 AM", date: "2026-05-18", available: true },
-  { id: "22", time: "02:00 PM", date: "2026-05-18", available: true },
+  { id: "15", time: "10:00 AM", date: "2026-05-18", available: true },
+  { id: "16", time: "04:00 PM", date: "2026-05-18", available: true },
   // May 19
-  { id: "23", time: "09:00 AM", date: "2026-05-19", available: true },
-  { id: "24", time: "11:00 AM", date: "2026-05-19", available: false },
-  { id: "25", time: "03:00 PM", date: "2026-05-19", available: true },
+  { id: "17", time: "09:00 AM", date: "2026-05-19", available: true },
+  { id: "18", time: "11:00 AM", date: "2026-05-19", available: true },
   // May 20
-  { id: "26", time: "10:00 AM", date: "2026-05-20", available: true },
-  { id: "27", time: "01:00 PM", date: "2026-05-20", available: true },
-  // May 21
-  { id: "28", time: "09:00 AM", date: "2026-05-21", available: true },
-  { id: "29", time: "04:00 PM", date: "2026-05-21", available: true },
-  // May 22
-  { id: "30", time: "08:00 AM", date: "2026-05-22", available: true },
-  { id: "31", time: "11:00 AM", date: "2026-05-22", available: true },
-  { id: "32", time: "02:00 PM", date: "2026-05-22", available: false },
+  { id: "19", time: "10:00 AM", date: "2026-05-20", available: true },
+  { id: "20", time: "01:00 PM", date: "2026-05-20", available: true },
 ];
 
 export const mockStandardServices: StandardService[] = [

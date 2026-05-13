@@ -18,12 +18,15 @@ interface AdminWebAppProps {
   onViewChange: (view: AdminView) => void;
   onTechReview: () => void;
   onOpenRejectionModal: () => void;
+  onDeclineRequest: () => void;
   onCloseRejectionModal: () => void;
   onSubmitRejection: () => void;
   onRejectionDraftChange: (value: string) => void;
   onCheckParts: () => void;
   onSelectSlot: (slotId: string) => void;
   onConfirmSlot: () => void;
+  onSuggestSlots: () => void;
+  onOrderParts: () => void;
   onAdminSend: () => void;
   onAdvisorInitiatePayment: () => void;
   onUpdateState: (updates: Partial<SystemState>) => void;
@@ -37,12 +40,15 @@ export function AdminWebApp({
   onViewChange,
   onTechReview,
   onOpenRejectionModal,
+  onDeclineRequest,
   onCloseRejectionModal,
   onSubmitRejection,
   onRejectionDraftChange,
   onCheckParts,
   onSelectSlot,
   onConfirmSlot,
+  onSuggestSlots,
+  onOrderParts,
   onAdminSend,
   onAdvisorInitiatePayment,
   onUpdateState,
@@ -87,13 +93,14 @@ export function AdminWebApp({
         </div>
 
         {state.adminView === 'requests' && (
-          <div className="flex-1 p-6 flex gap-6 overflow-x-auto">
+          <div className="flex-1 p-6 flex gap-6 overflow-x-auto min-w-0 bg-white">
             <IncomingColumn
               clientView={state.clientView}
               orderStatus={state.orderStatus}
               formData={state.formData}
               onTechReview={onTechReview}
               onOpenRejectionModal={onOpenRejectionModal}
+              onDeclineRequest={onDeclineRequest}
               onClientClick={(name) => {
                 const client = mockClients.find(c => c.name === name);
                 if (client) {
@@ -103,6 +110,7 @@ export function AdminWebApp({
                   });
                 }
               }}
+              resourcesAllocated={state.resourcesAllocated}
             />
 
             <PartsReviewColumn
@@ -113,33 +121,46 @@ export function AdminWebApp({
               partsOrdered={state.partsOrdered}
               availableSlots={state.availableSlots}
               onCheckParts={onCheckParts}
+              onSuggestSlots={onSuggestSlots}
+              slotsSuggested={state.slotsSuggested}
             />
 
-            <ScheduleColumn
-              availableSlots={state.availableSlots}
-              selectedSlot={state.selectedSlot}
-              partsOrdered={state.partsOrdered}
-              offeredSlots={state.offeredSlots}
-              appointmentConfirmed={state.appointmentConfirmed}
-              onSelectSlot={onSelectSlot}
-              onConfirmSlot={onConfirmSlot}
-            />
+            {state.resourcesAllocated && state.orderStatus !== 'accepted' && state.orderStatus !== 'in_progress' && state.orderStatus !== 'done' && (
+              <ScheduleColumn
+                availableSlots={state.availableSlots}
+                selectedSlot={state.selectedSlot}
+                partsOrdered={state.partsOrdered}
+                offeredSlots={state.offeredSlots}
+                appointmentConfirmed={state.appointmentConfirmed}
+                onSelectSlot={onSelectSlot}
+                onConfirmSlot={onConfirmSlot}
+                onOrderParts={onOrderParts}
+                appointmentNotif={state.appointmentNotif}
+              />
+            )}
 
-            <ScheduledColumn
-              orderStatus={state.orderStatus}
-              selectedSlot={state.selectedSlot}
-              availableSlots={state.availableSlots}
-              formData={state.formData}
-              appointmentConfirmed={state.appointmentConfirmed}
-              onAdminSend={onAdminSend}
-            />
+            {(state.orderStatus === 'accepted' || state.orderStatus === 'in_progress' || state.orderStatus === 'done') && (
+              <ScheduledColumn
+                orderStatus={state.orderStatus}
+                selectedSlot={state.selectedSlot}
+                availableSlots={state.availableSlots}
+                formData={state.formData}
+                appointmentConfirmed={state.appointmentConfirmed}
+                partsOrdered={state.partsOrdered}
+                onAdminSend={onAdminSend}
+                onOrderParts={onOrderParts}
+              />
+            )}
 
             <ActiveColumn
               orderStatus={state.orderStatus}
               formData={state.formData}
               additionalTasks={state.additionalTasks}
+              workElapsedSeconds={state.workElapsedSeconds}
+              intakePhotos={state.intakePhotos}
               onAdminSetPrice={onAdminSetTaskPrice}
               onAdminSendToClient={onAdminSendTaskToClient}
+              selectedMechanics={state.selectedMechanics}
             />
 
             <CompletedColumn

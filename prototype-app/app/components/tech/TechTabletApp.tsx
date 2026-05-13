@@ -23,7 +23,6 @@ interface TechTabletAppProps {
   additionalTasks: AdditionalTask[];
   showAdditionalTaskModal: boolean;
   additionalTaskDraft: string;
-  additionalTaskCostDraft: string;
   opacity: string;
   loggedInMechanics: LoggedInMechanic[];
   currentMechanicView: string | null;
@@ -36,7 +35,8 @@ interface TechTabletAppProps {
   onCloseAdditionalTaskModal: () => void;
   onSubmitAdditionalTask: () => void;
   onTaskDraftChange: (value: string) => void;
-  onCostDraftChange: (value: string) => void;
+  onAdditionalTaskPhoto: () => void;
+  additionalTaskPhotosDraft: string[];
   onTechComplete: () => void;
   onMechanicLogin: (mechanicId: string) => void;
   onMechanicLogout: (mechanicId: string) => void;
@@ -53,7 +53,6 @@ export function TechTabletApp({
   additionalTasks,
   showAdditionalTaskModal,
   additionalTaskDraft,
-  additionalTaskCostDraft,
   opacity,
   loggedInMechanics,
   currentMechanicView,
@@ -66,7 +65,8 @@ export function TechTabletApp({
   onCloseAdditionalTaskModal,
   onSubmitAdditionalTask,
   onTaskDraftChange,
-  onCostDraftChange,
+  onAdditionalTaskPhoto,
+  additionalTaskPhotosDraft,
   onTechComplete,
   onMechanicLogin,
   onMechanicLogout,
@@ -75,7 +75,7 @@ export function TechTabletApp({
   const hasLoggedInMechanics = loggedInMechanics?.length > 0;
   const currentMechanic = mockMechanics.find(m => m.id === currentMechanicView);
   const isAssignedToCurrentMechanic = currentMechanicView && selectedMechanics?.includes(currentMechanicView);
-  const showWorkspace = techTaskVisible && (!currentMechanicView || isAssignedToCurrentMechanic);
+  const showWorkspace = techTaskVisible === true && orderStatus === 'in_progress' && (!currentMechanicView || isAssignedToCurrentMechanic);
 
   return (
     <div data-section="tech" className={`bg-white border border-gray-200 rounded-3xl flex flex-col relative shadow-xl transition-all duration-700 ${opacity} ${orderStatus === 'in_progress' ? 'flex-[4]' : 'flex-[2]'}`}>
@@ -179,11 +179,11 @@ export function TechTabletApp({
           <AdditionalTaskModal
             show={showAdditionalTaskModal}
             additionalTaskDraft={additionalTaskDraft}
-            additionalTaskCostDraft={additionalTaskCostDraft}
             onClose={onCloseAdditionalTaskModal}
             onSubmit={onSubmitAdditionalTask}
             onTaskDraftChange={onTaskDraftChange}
-            onCostDraftChange={onCostDraftChange}
+            onPhotoUpload={onAdditionalTaskPhoto}
+            photosDraft={additionalTaskPhotosDraft}
           />
         </>
       )}

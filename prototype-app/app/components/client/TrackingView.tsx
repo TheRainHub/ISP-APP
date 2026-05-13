@@ -24,6 +24,7 @@ interface TrackingViewProps {
   showPayment: boolean;
   vehiclePickedUp: boolean;
   partsOrdered: boolean;
+  requestDeclined: boolean;
   onConfirmAppointment: () => void;
   onDeclineAppointment: () => void;
   onApproveAdditionalTask: (taskId: string) => void;
@@ -47,6 +48,7 @@ export function TrackingView({
   showPayment,
   vehiclePickedUp,
   partsOrdered,
+  requestDeclined,
   onConfirmAppointment,
   onDeclineAppointment,
   onApproveAdditionalTask,
@@ -59,7 +61,30 @@ export function TrackingView({
     <div>
       <h3 className="font-semibold text-gray-900 mb-4">{formData.vehicle} ({formData.vin})</h3>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 relative z-0">
+      {requestDeclined ? (
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center shadow-sm"
+        >
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h3 className="text-xl font-bold text-red-900 mb-2">Request Declined</h3>
+          <p className="text-sm text-red-700 mb-6">
+            Your service request has been declined by the administrator. 
+            This usually happens due to invalid data or service unavailability.
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-colors"
+          >
+            Create New Request
+          </button>
+        </motion.div>
+      ) : (
+        <>
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 relative z-0">
         <div className="flex justify-between items-center mb-6">
           <span className="text-xs text-gray-500 font-medium">Order Status</span>
           <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase ${
@@ -121,7 +146,7 @@ export function TrackingView({
 
       <div className="mt-auto">
         <AnimatePresence>
-          {availableSlots.length > 0 && !appointmentConfirmed && (
+          {appointmentNotif && !appointmentConfirmed && (
             <SlotPicker
               key="slot-picker"
               availableSlots={availableSlots}
@@ -130,6 +155,36 @@ export function TrackingView({
               onSelectSlot={onSelectSlot}
               onConfirmSlot={onConfirmAppointment}
             />
+          )}
+
+          {selectedSlot && !appointmentConfirmed && !appointmentNotif && (
+            <motion.div
+              key="appointment-pending"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+              className="bg-amber-50 border border-amber-200 rounded-2xl p-4 shadow-sm mb-4"
+            >
+              <div className="flex gap-3 items-start">
+                <Clock className="w-6 h-6 text-amber-600 shrink-0 mt-1" />
+                <div>
+                  <div className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
+                    Pending Confirmation
+                    <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                  </div>
+                  <div className="text-xs text-gray-700 mb-1">
+                    {availableSlots.find(s => s.id === selectedSlot)?.date.split('-').reverse().join('.')}
+                  </div>
+                  <div className="text-xs text-gray-700 flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {availableSlots.find(s => s.id === selectedSlot)?.time}
+                  </div>
+                  <div className="text-[10px] text-amber-700 mt-2 font-bold uppercase tracking-wider">
+                    Waiting for service advisor to approve
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           )}
 
           {appointmentConfirmed && selectedSlot && (
@@ -145,14 +200,14 @@ export function TrackingView({
                 <div>
                   <div className="text-sm font-bold text-gray-900 mb-1">✓ Appointment Confirmed</div>
                   <div className="text-xs text-gray-700 mb-1">
-                    {availableSlots.find(s => s.id === selectedSlot)?.date}
+                    {availableSlots.find(s => s.id === selectedSlot)?.date.split('-').reverse().join('.')}
                   </div>
                   <div className="text-xs text-gray-700 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     {availableSlots.find(s => s.id === selectedSlot)?.time}
                   </div>
-                  <div className="text-xs text-emerald-700 mt-2 font-semibold">
-                    Waiting for service advisor confirmation
+                  <div className="text-[10px] text-emerald-700 mt-2 font-bold uppercase tracking-wider">
+                    Confirmed by Service Advisor
                   </div>
                 </div>
               </div>
@@ -172,6 +227,15 @@ export function TrackingView({
                 <div className="flex-1">
                   <div className="text-sm font-bold text-gray-900 mb-1">Additional Issue Found</div>
                   <p className="text-xs text-gray-700 mb-2">{task.description}</p>
+                  
+                  {task.photos && task.photos.length > 0 && (
+                    <div className="flex gap-1.5 mb-3">
+                      {task.photos.map((p, i) => (
+                        <img key={i} src={p} className="w-12 h-12 rounded-lg border border-amber-200 object-cover" />
+                      ))}
+                    </div>
+                  )}
+
                   <div className="text-sm font-bold text-amber-900">
                     Estimated Cost: {task.estimatedCost} Kč
                   </div>
@@ -421,6 +485,8 @@ export function TrackingView({
           )}
         </AnimatePresence>
       </div>
+      </>
+      )}
     </div>
   );
 }
