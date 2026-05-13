@@ -11,6 +11,8 @@ interface ScheduleColumnProps {
   appointmentConfirmed: boolean;
   onSelectSlot: (slotId: string) => void;
   onConfirmSlot: () => void;
+  onOrderParts: () => void;
+  appointmentNotif: boolean;
 }
 
 export function ScheduleColumn({
@@ -19,6 +21,8 @@ export function ScheduleColumn({
   partsOrdered,
   appointmentConfirmed,
   onConfirmSlot,
+  onOrderParts,
+  appointmentNotif,
 }: ScheduleColumnProps) {
   if (!availableSlots || availableSlots.length === 0) return null;
 
@@ -58,8 +62,8 @@ export function ScheduleColumn({
 
         {selectedSlot && !appointmentConfirmed && selectedSlotData && (
           <div className="space-y-3">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="text-xs font-bold text-blue-900 mb-2">Client Selected:</div>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 animate-pulse">
+              <div className="text-xs font-bold text-amber-900 mb-2 uppercase tracking-wider">Action Needed: Client Selected Time</div>
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-blue-600" />
                 <div>
@@ -72,13 +76,28 @@ export function ScheduleColumn({
               </div>
             </div>
 
-            <button
-              onClick={onConfirmSlot}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg text-sm font-bold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2"
-            >
-              <CheckCircle className="w-4 h-4" />
-              Confirm & Schedule
-            </button>
+            {!partsOrdered && (
+              <button
+                onClick={onOrderParts}
+                className="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+              >
+                Order Missing Parts
+              </button>
+            )}
+
+            {!appointmentNotif ? (
+              <button
+                onClick={onConfirmSlot}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg text-sm font-bold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+              >
+                <CheckCircle className="w-4 h-4" />
+                Confirm & Schedule
+              </button>
+            ) : (
+              <div className="w-full bg-amber-100 text-amber-700 py-2 rounded-lg text-[10px] font-bold text-center border border-amber-200">
+                CLIENT IS PICKING... WAITING FOR "BOOK" CLICK
+              </div>
+            )}
           </div>
         )}
 

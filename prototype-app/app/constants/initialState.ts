@@ -48,4 +48,8 @@ export const initialState: SystemState = {
   workStartTime: null,
   workElapsedSeconds: 0,
   selectedClientId: null,
+  slotsSuggested: false,
+  maxStepReached: 0,
+  requestDeclined: false,
+  additionalTaskPhotosDraft: [],
 };

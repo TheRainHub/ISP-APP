@@ -9,9 +9,9 @@ interface PartsReviewColumnProps {
   resourcesAllocated: boolean;
   selectedBay: string | null;
   selectedMechanics: string[];
-  partsOrdered: boolean;
-  availableSlots: TimeSlot[];
   onCheckParts: () => void;
+  onSuggestSlots: () => void;
+  slotsSuggested: boolean;
 }
 
 export function PartsReviewColumn({
@@ -22,6 +22,8 @@ export function PartsReviewColumn({
   partsOrdered,
   availableSlots,
   onCheckParts,
+  onSuggestSlots,
+  slotsSuggested,
 }: PartsReviewColumnProps) {
   if (!requiredParts || requiredParts.length === 0) return null;
 
@@ -51,12 +53,13 @@ export function PartsReviewColumn({
                 {part.available ? (
                   <>
                     <CheckCircle className="w-3 h-3 text-emerald-600" />
-                    <span className="text-emerald-700">In stock ({part.quantity})</span>
+                    <span className="text-emerald-700">In stock ({part.quantity}) · {part.supplier}</span>
                   </>
                 ) : (
                   <>
                     <Truck className="w-3 h-3 text-amber-600" />
-                    <span className="text-amber-700">Order needed - ETA: {part.estimatedDelivery}</span>
+                    <span className="text-amber-700 font-bold">ETA: {part.estimatedDelivery}</span>
+                    <span className="text-gray-400 ml-1">via {part.supplier}</span>
                   </>
                 )}
               </div>
@@ -107,14 +110,24 @@ export function PartsReviewColumn({
           </div>
         )}
 
-        {!partsOrdered && requiredParts.some(p => !p.available) && (
+        {!slotsSuggested && requiredParts.some(p => !p.available) && (
           <button
-            onClick={onCheckParts}
-            className="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+            onClick={onSuggestSlots}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2"
           >
-            <Truck className="w-4 h-4" />
-            Order Missing Parts
+            <Calendar className="w-4 h-4" />
+            Suggest terms to client
           </button>
+        )}
+
+        {slotsSuggested && !partsOrdered && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 flex items-start gap-2">
+            <Clock className="w-4 h-4 shrink-0 mt-0.5" />
+            <div>
+              <div className="font-bold mb-1">Waiting for client to pick a term</div>
+              <p>You can order the missing parts once the client confirms the appointment time.</p>
+            </div>
+          </div>
         )}
 
         {partsOrdered && (
@@ -122,7 +135,7 @@ export function PartsReviewColumn({
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <div>
               <div className="font-bold mb-1">✓ Parts ordered from factory</div>
-              <div>Estimated delivery: May 11, 2026</div>
+              <div>Estimated delivery: May 17, 2026</div>
               <div className="mt-2 text-emerald-700 font-semibold">→ Check available slots after delivery date</div>
             </div>
           </div>
