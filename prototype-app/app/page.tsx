@@ -43,7 +43,7 @@ export default function PrototypePage() {
         onReset={reset} 
         onPrevStep={handlers.handlePrevStep}
         onNextStep={handlers.handleNextStep}
-        canGoNext={state.step < state.maxStepReached}
+        canGoNext={state.step < 3}
       />
 
       <main className="flex-1 flex gap-6 p-6 overflow-auto bg-gray-100">
