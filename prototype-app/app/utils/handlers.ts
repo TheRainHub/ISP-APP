@@ -389,15 +389,82 @@ export function createHandlers(
 
     handlePrevStep: () => {
       if (state.step > 0) {
-        setState({ step: state.step - 1 });
-        showToast(`Back to Step ${state.step - 1}`);
+        const prevStep = state.step - 1;
+        const stateUpdate: any = { step: prevStep };
+        
+        if (prevStep === 0) {
+          stateUpdate.orderStatus = "new";
+          stateUpdate.techTaskVisible = false;
+          stateUpdate.clientView = "form";
+        } else if (prevStep === 1) {
+          stateUpdate.orderStatus = "accepted";
+          stateUpdate.techTaskVisible = false;
+          stateUpdate.clientView = "tracking";
+        } else if (prevStep === 2) {
+          stateUpdate.orderStatus = "in_progress";
+          stateUpdate.techTaskVisible = true;
+          stateUpdate.clientView = "tracking";
+        }
+        
+        setState(stateUpdate);
+        showToast(`Back to Stage ${prevStep}`);
       }
     },
 
     handleNextStep: () => {
-      if (state.step < state.maxStepReached) {
-        setState({ step: state.step + 1 });
-        showToast(`Forward to Step ${state.step + 1}`);
+      if (state.step < 3) {
+        const nextStep = state.step + 1;
+        const stateUpdate: any = { 
+          step: nextStep,
+          maxStepReached: Math.max(state.maxStepReached, nextStep)
+        };
+
+        // Наполняем демо-данными только если поля пустые
+        if (!state.formData.vehicle) {
+          stateUpdate.formData = {
+            ...state.formData,
+            vehicle: "BMW X5",
+            vin: "5UXKR0C58L9C12345",
+            issue: "Brake system inspection and pad replacement",
+            selectedServices: ["svc1", "svc3"],
+            photos: [],
+            prefersOriginalParts: true
+          };
+        }
+
+        if (nextStep === 1) {
+          stateUpdate.orderStatus = "accepted";
+          if (!state.selectedSlot) stateUpdate.selectedSlot = "1";
+          stateUpdate.clientView = "tracking";
+        } else if (nextStep === 2) {
+          stateUpdate.orderStatus = "in_progress";
+          stateUpdate.techTaskVisible = true;
+          stateUpdate.appointmentConfirmed = true;
+          stateUpdate.intakePhotosComplete = true;
+          
+          if (state.selectedMechanics.length === 0) {
+            stateUpdate.selectedMechanics = ["mech1", "mech2"];
+            stateUpdate.loggedInMechanics = [
+              { mechanicId: "mech1", name: "Nazar Sergeyev", loginTime: Date.now() },
+              { mechanicId: "mech2", name: "Petra Svobodová", loginTime: Date.now() }
+            ];
+            stateUpdate.currentMechanicView = "mech1";
+          }
+          
+          if (!state.selectedSlot) stateUpdate.selectedSlot = "1";
+          if (!state.workStartTime) stateUpdate.workStartTime = Date.now();
+          stateUpdate.clientView = "tracking";
+        } else if (nextStep === 3) {
+          stateUpdate.orderStatus = "done";
+          stateUpdate.clientView = "tracking";
+          stateUpdate.paymentInitiatedByAdvisor = true;
+          stateUpdate.showPayment = true;
+          stateUpdate.appointmentConfirmed = true;
+          if (!state.selectedSlot) stateUpdate.selectedSlot = "1";
+        }
+
+        setState(stateUpdate);
+        showToast(`Skipped to Stage ${nextStep} (with Demo Data)`);
       }
     },
   };

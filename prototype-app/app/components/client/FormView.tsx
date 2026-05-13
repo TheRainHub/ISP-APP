@@ -97,11 +97,12 @@ export function FormView({
             >
               <input
                 type="checkbox"
-                checked={formData.selectedServices.includes(service.id)}
+                checked={(formData.selectedServices || []).includes(service.id)}
                 onChange={(e) => {
+                  const currentServices = formData.selectedServices || [];
                   const newServices = e.target.checked
-                    ? [...formData.selectedServices, service.id]
-                    : formData.selectedServices.filter(id => id !== service.id);
+                    ? [...currentServices, service.id]
+                    : currentServices.filter((id: string) => id !== service.id);
                   onFormChange('selectedServices', newServices);
                 }}
                 className="mt-0.5 w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
@@ -123,7 +124,7 @@ export function FormView({
         <label className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-white transition-colors">
           <input
             type="checkbox"
-            checked={formData.prefersOriginalParts}
+            checked={!!formData.prefersOriginalParts}
             onChange={(e) => onFormChange('prefersOriginalParts', e.target.checked)}
             className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
           />
@@ -136,7 +137,7 @@ export function FormView({
       <div>
         <label className="text-xs font-semibold text-gray-700 mb-2 block">Photos (Optional)</label>
         <div className="grid grid-cols-3 gap-2 mb-2">
-          {formData.photos.map((photo, idx) => (
+          {(formData.photos || []).map((photo, idx) => (
             <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
               <img src={photo} alt={`Photo ${idx + 1}`} className="w-full h-full object-cover" />
               <button
